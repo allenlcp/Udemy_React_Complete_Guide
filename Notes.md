@@ -25,7 +25,7 @@ ___
 ## **REACT**
 
 > Component is just a function returning some jsx
-``` javascript
+``` jsx
 import React from 'react'; // When using jsx, we need to import react
 
 const person = () => {
