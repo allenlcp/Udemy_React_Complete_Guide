@@ -237,7 +237,6 @@ render() {
           age={this.state.persons[1].age}
           click={this.switchNameHandler.bind(this, "Maxi")}
           changed={this.nameChangeHandler}>My Hobbies: Racing</Person>
-       
       </div>
     );
 }
@@ -287,3 +286,91 @@ render() {
     );
   }
 ```
+
+___
+
+no block statement in jsx only oneline e.g ternary operator eligible but not if else statements
+___
+
+Handling dynamic content "The JS way"
+> Ternary op not optimal
+> Every time reactjs render() it will process all code before return(), there can add code before return() for processing
+
+___
+
+## **Outputting List**
+> Use js map()
+``` jsx
+<div>
+    {this.state.persons.map((persons, index) => {
+        return <Person 
+        click={() => this.deletePersonHandler(index)}
+        name={persons.name}
+        age={persons.age} />
+    })}
+</div> 
+```
+___
+
+## **Immutability**
+> **We should update state in a immutable fashion**
+> If not, we are passing as reference and mutating it
+``` jsx
+const persons = this.state.persons;
+// -> any other operations here on persons is mutating the original array leading to wierd effects
+```
+> 1. use slice() to make a copy of a list
+``` jsx
+const persons = this.state.persons.slice();
+```
+> 2. use spread operation
+``` jsx
+const persons = [...this.state.persons];
+```
+
+___
+
+## **Lists and Keys**
+> key prop required
+> helps react update list efficiently
+``` jsx
+{this.state.persons.map((persons, index) => {
+    return <Person 
+    click={() => this.deletePersonHandler(index)}
+    name={persons.name}
+    age={persons.age} 
+    key={person.id}/>  // usually passed id
+})}
+```
+___
+
+## **Immutable process to update an object in an array**
+``` jsx
+nameChangeHandler = (event, id) => {
+    // could have used indexOf() here
+    // I'm finding the index of the person to be updated
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id  === id;
+    })
+
+    // another way - old
+    // const person = Object.assign({}, this.state.persons[personIndex]);
+
+    // getting copy of objects
+    // get a copy of the person object
+    const person = {
+      ...this.state.persons[personIndex]}
+    ;
+
+    // change name of the person object
+    person.name = event.target.value;
+
+    // get a copy of the persons array
+    const persons = [...this.state.persons];
+    // update the person object from the persons array to the updated one
+    persons[personIndex] = person;
+
+    // updating old persons array with the new copy
+    this.setState({persons: persons});
+};
+````
