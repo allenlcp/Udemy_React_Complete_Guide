@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./App.css";
 import Person from "./Person/Person";
+import UserInput from "./UserInput/UserInput";
+import UserOutput from "./UserOutput/UserOutput";
 
 class App extends Component {
   state = {
@@ -34,6 +36,12 @@ class App extends Component {
     });
   };
 
+  outputChangeHandler = (event) => {
+    this.setState({
+      otherState: event.target.value
+    });
+  };
+
   render() {
     const style ={
       backgroundColor: 'white',
@@ -60,6 +68,10 @@ class App extends Component {
         <Person
           name={this.state.persons[2].name}
           age={this.state.persons[2].age}/>
+        <UserInput 
+          changed={this.outputChangeHandler}
+          name={this.state.otherState}></UserInput>
+        <UserOutput name={this.state.otherState}>Testing01</UserOutput>
       </div>
     );
     // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
