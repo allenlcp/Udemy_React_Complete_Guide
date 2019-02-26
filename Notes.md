@@ -25,7 +25,7 @@ ___
 ## **REACT**
 
 > Component is just a function returning some jsx
-```javascript
+``` javascript
 import React from 'react'; // When using jsx, we need to import react
 
 const person = () => {
@@ -34,7 +34,7 @@ const person = () => {
 
 export default person;
 ```
-```javascript
+``` jsx
 import React, { Component } from 'react';
 import './App.css';
 import Person from './Person';  // importing component
@@ -53,5 +53,5 @@ export default App;
 ```
 ____
 
-[Component](resources/pdf.components.pdf)
-![Component](resources/pdf.components.pdf)
+[Component](resources/pdf/components.pdf)
+
