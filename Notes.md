@@ -396,3 +396,4 @@ ___
 
 
 ## **Debugging**
+> Use error boundary - mainly for dev
