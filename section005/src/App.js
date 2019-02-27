@@ -5,9 +5,9 @@ import Person from "./Person/Person";
 class App extends Component {
   state = {
     persons: [
-      { id: 'asd',name: "Max", age: 28 },
-      { id: 'daf',name: "Manu", age: 29 },
-      { id: 'gfg',name: "Stephanie", age: 26 }
+      { id: "asd", name: "Max", age: 28 },
+      { id: "daf", name: "Manu", age: 29 },
+      { id: "gfg", name: "Stephanie", age: 26 }
     ],
     otherState: "some other value",
     showPersons: false
@@ -17,8 +17,8 @@ class App extends Component {
     // could have used indexOf() here
     // I'm finding the index of the person to be updated
     const personIndex = this.state.persons.findIndex(p => {
-      return p.id  === id;
-    })
+      return p.id === id;
+    });
 
     // another way - old
     // const person = Object.assign({}, this.state.persons[personIndex]);
@@ -26,9 +26,8 @@ class App extends Component {
     // getting copy of objects
     // get a copy of the person object
     const person = {
-      ...this.state.persons[personIndex]}
-    ;
-
+      ...this.state.persons[personIndex]
+    };
     // change name of the person object
     person.name = event.target.value;
 
@@ -38,23 +37,19 @@ class App extends Component {
     persons[personIndex] = person;
 
     // updating old persons array with the new copy
-    this.setState({persons: persons});
-
-
-
-    
+    this.setState({ persons: persons });
   };
 
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
-    this.setState({showPersons: !doesShow});
-  }
+    this.setState({ showPersons: !doesShow });
+  };
 
-  deletePersonHandler = (personIndex) => {
+  deletePersonHandler = personIndex => {
     const persons = this.state.persons.slice();
     persons.splice(personIndex, 1);
-    this.setState({persons: persons});
-  }
+    this.setState({ persons: persons });
+  };
 
   render() {
     const style = {
@@ -67,18 +62,21 @@ class App extends Component {
 
     let persons = null;
 
-    if (this.state.showPersons){
+    if (this.state.showPersons) {
       persons = (
         <div>
-            {this.state.persons.map((person, index) => {
-              return <Person 
+          {this.state.persons.map((person, index) => {
+            return (
+              <Person
                 click={() => this.deletePersonHandler(index)}
                 name={person.name}
-                age={person.age} 
-                key={person.id}  // usually passed id
-                changed={(event) => this.nameChangeHandler(event, person.id)}/>
-            })}
-          </div> 
+                age={person.age}
+                key={person.id} // usually passed id
+                changed={event => this.nameChangeHandler(event, person.id)}
+              />
+            );
+          })}
+        </div>
       );
     }
 
@@ -86,9 +84,9 @@ class App extends Component {
       <div className="App">
         <h1>Hi, I'm a React App</h1>
         <p>This is really working!</p>
-        <button 
-          style={style} 
-          onClick={this.togglePersonsHandler}>Switch Name</button>
+        <button style={style} onClick={this.togglePersonsHandler}>
+          Switch Name
+        </button>
         {persons}
       </div>
     );

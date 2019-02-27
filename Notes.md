@@ -374,7 +374,8 @@ nameChangeHandler = (event, id) => {
     this.setState({persons: persons});
 };
 ````
-
 ____
 
+## **Styling React**
+> 
 
