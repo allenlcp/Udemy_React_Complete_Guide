@@ -390,4 +390,9 @@ nameChangeHandler = (event, id) => {
 > Imported css files need to end with "*.module.css"
 
 ## **Pseudo Selectors**
->
+> Use css modules and will work
+
+___
+
+
+## **Debugging**
