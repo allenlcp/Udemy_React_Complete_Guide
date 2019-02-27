@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./App.css";
+import classes from "./App.module.css";
 import Person from "./Person/Person";
 
 class App extends Component {
@@ -54,7 +54,7 @@ class App extends Component {
   render() {
     const style = {
       backgroundColor: "green",
-      color: 'white',
+      color: "white",
       font: "inherit",
       border: "1px solid blue",
       padding: "8px",
@@ -80,29 +80,29 @@ class App extends Component {
         </div>
       );
 
-      style.backgroundColor = 'red';
+      style.backgroundColor = "red";
     }
 
-    const classes = [];
+    const assignedClasses = [];
 
-    if(this.state.persons.length <= 2){
-      classes.push('red');
+    if (this.state.persons.length <= 2) {
+      console.log(classes.red);
+      assignedClasses.push(classes.red);
     }
 
-    if(this.state.persons.length <= 1){
-      classes.push('bold');
+    if (this.state.persons.length <= 1) {
+      console.log(classes.bold);
+      assignedClasses.push(classes.bold);
     }
-
-
     return (
-        <div className="App">
-          <h1>Hi, I'm a React App</h1>
-          <p className={classes.join(' ')}>This is really working!</p>
-          <button style={style} onClick={this.togglePersonsHandler}>
-            Switch Name
-          </button>
-          {persons}
-        </div>
+      <div className={classes.App}>
+        <h1>Hi, I'm a React App</h1>
+        <p className={assignedClasses.join(" ")}>This is really working!</p>
+        <button style={style} onClick={this.togglePersonsHandler}>
+          Switch Name
+        </button>
+        {persons}
+      </div>
     );
     // return React.createElement('div', {classid: ,Name: 'App'}, React.createElement('h1', null, 'Does this work now?'));
   }
