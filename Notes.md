@@ -381,3 +381,13 @@ nameChangeHandler = (event, id) => {
 > Use radium (npm) for more complex css e.g css pseudo classes
 
 > Import radium StyleRoot for media queries
+
+## **npm run eject**
+> config folder -> 
+> scripts folders -> have files for each command in the package.json
+
+## **CSS Module**
+> Imported css files need to end with "*.module.css"
+
+## **Pseudo Selectors**
+>
