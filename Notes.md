@@ -394,6 +394,13 @@ nameChangeHandler = (event, id) => {
 
 ___
 
-
 ## **Debugging**
 > Use error boundary - mainly for dev
+
+___
+
+## **React Components and Internals**
+> Components vs Container
+
+> Can return a list without divs
+> Otherwise, we need divs
