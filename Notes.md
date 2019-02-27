@@ -373,10 +373,11 @@ nameChangeHandler = (event, id) => {
     // updating old persons array with the new copy
     this.setState({persons: persons});
 };
-````
-____
+```
 
-## **Styling React**
->
+## **Styling**
+> Setting class dynamically - using js
 
+> Use radium (npm) for more complex css e.g css pseudo classes
 
+> Import radium StyleRoot for media queries
