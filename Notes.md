@@ -203,6 +203,21 @@ export default app;
 ___
 
 ## **Stateful vs Stateless Components**
+> stateful (container) -> component that manages states
+> stateless (dumb components) -> functional components that doesn't use state; even (react16) though we can do it now with hooks
+
+|class-based|functional|
+|---|---|
+|class XY extends Component|const XY = props => {...}|
+|access to state|access to state(useState())|
+|lifecycle hooks|not supported|
+|access state and props via 'this'|access props via "props"|
+|this.state.XY & this.props.XY|props.XY|
+
+> Use class-based -> if you need to manage State or access to lifecycle hooks and you don't want to use React Hooks!
+> Use functional -> use in all cases
+
+
 
 ___
 
@@ -404,3 +419,28 @@ ___
 
 > Can return a list without divs
 > Otherwise, we need divs
+
+___
+
+## **Lifecycle Hooks has absolutely NOTHING to do with React Hooks**
+___
+
+## **Component Lifecycle**
+> Only available in class-based components
+
+|class-based components|Desc|
+|---|---|
+|constructor()||
+|getDerivedStateFromPost()||
+|shouldComponentUpdate()||
+|getSnapshotBeforeUpdate()||
+|componentDidUpdate()||
+|componentDidCatch()||
+|componentDidMount()||
+|componentWillUnmount()||
+|render()||
+
+
+## **Component Lifecycle - Creation**
+[lifecycle-creation-learning-card](lifecycle-creation-learning-card.pdf)
+
