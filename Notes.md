@@ -1086,4 +1086,14 @@ ____
 ____
 
 
+## **Planning a React App**
+> Component Tree / Component Structure
+> Application State(Data)
+> Components (stateless) vs Containers (stateful)
 
+
+____
+
+[...Array(2)] -> creates any array of 2 empty element;
+
+___
