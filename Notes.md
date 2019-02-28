@@ -477,6 +477,7 @@ componentDidUpdate(){}
 
 ## **Lifecycle - functional component**
 > Use useEffect from react
+> it runs after the render() method
 ``` jsx
 import React, {useEffect} from "react";
 ```
@@ -605,10 +606,423 @@ ___
 
 ## **How react updates the real dom**
 
-![HowReactUpdatesTheDom](resouces/pdf/HowReactUpdatesTheDom.png)
+![HowReactUpdatesTheDom](resources/pdf/HowReactUpdatesTheDom.png)
 
 ___
 
 
 ## **Rendering Adjacent JSX Elements**
-[react-adjacent-jsx](resouces/pdf/react-adjacent-jsx.pdf)
+[react-adjacent-jsx](resources/pdf/react-adjacent-jsx.pdf)
+
+> By default javascript wants/allows you to return only one expression <div>
+``` jsx
+return (
+  // main div here
+  <div className={classes.Person}> 
+    <p onClick={this.props.click}>
+      I'm a {this.props.name} and I am {this.props.age} years old!
+    </p>
+    <p>{this.props.children}</p>
+    <input type="text" onChange={this.props.changed} value={this.props.name} />
+  </div>
+);
+```
+
+> Actually react allows us to return an array of element as long as they have a key
+``` jsx
+render() {
+  console.log("[Person.js] render");
+  // returning array [] below rather than ()
+  return [
+      <p key="i1" onClick={this.props.click}>
+        I'm a {this.props.name} and I am {this.props.age} years old!
+      </p>,
+      <p key="i2">{this.props.children}</p>,
+      <input key="i3" type="text" onChange={this.props.changed} value={this.props.name} />     
+  ];
+}
+```
+
+> Using higher order component (hoc)
+> Just create an empty component and return the children
+``` jsx
+// import React from 'react'; -> no need to import React as we are not using jsx
+const aux = props => props.children;  
+export default aux;  // on windows avoid aux (reserver word) - use something else e.g auxiliary
+```
+``` jsx
+return (
+  <Aux> 
+    <p onClick={this.props.click}>
+      I'm a {this.props.name} and I am {this.props.age} years old!
+    </p>
+    <p>{this.props.children}</p>
+    <input
+      type="text"
+      onChange={this.props.changed}
+      value={this.props.name}
+    />
+  </Aux>
+);
+```
+
+> Now we have build-in component/wrapper, no need to custom build one, just use <React.Fragment> instead
+``` jsx
+return (
+  <React.Fragment>
+    <p onClick={this.props.click}>
+      I'm a {this.props.name} and I am {this.props.age} years old!
+    </p>
+    <p>{this.props.children}</p>
+    <input
+      type="text"
+      onChange={this.props.changed}
+      value={this.props.name}
+    />
+  </React.Fragment>
+);
+```
+> Our just import the Fragment compoment
+``` jsx
+import React, { Component, Fragment } from "react";
+```
+> and then
+``` jsx
+return (
+  <Fragment>
+    <p onClick={this.props.click}>
+      I'm a {this.props.name} and I am {this.props.age} years old!
+    </p>
+    <p>{this.props.children}</p>
+    <input
+      type="text"
+      onChange={this.props.changed}
+      value={this.props.name}
+    />
+  </Fragment>
+);
+```
+
+____
+
+## **Higher Order Function (HOC)**
+> Component that wraps other component to add things to it
+> e.g styling, http error handling, additional html, additional logic
+
+>* Method 1 - better for styling, additional html
+``` jsx
+import React from "react";
+const withClass = props => (
+  <div className={props.classes}>{props.children}</div>
+);
+export default withClass;
+```
+
+>* Method 2 - added logic
+>* First argument -> WrappedComponent -> needs to start with Capital Letters because it will be a reference to a component
+>* 2nd argument -> is what you need in you hoc, can accept as many other arguments as we need for the hoc
+
+``` jsx
+import React from "react";
+// This is a normal function that returns a react component function
+const withClass = (WrappedComponent, className) => {
+  {/* return react component */}
+  return props => (
+    <div className={className}>
+      <WrappedComponent />  {/* what the WrappedComponent return is injected here */}
+    </div>
+  );
+};
+export default withClass;
+```
+
+``` jsx
+import React, { Component } from "react";
+import classes from "./App.module.css";
+...
+import withClass from "../hoc/withClass";
+import Aux from "../hoc/Aux";
+
+class App extends Component {
+  ... constructor, lifecycle event function, other functions and etc
+  render() {
+    ... other logic here
+    return (
+      <Aux>
+        .... jsx here
+      </Aux>
+    );
+  }
+}
+
+export default withClass(App, classes.App); 
+```
+___
+
+## **Passing unknown props**
+> pass the destructured props
+``` jsx
+const withClass = (WrappedComponent, className) => {
+  return props => (
+    <div className={className}>
+      <WrappedComponent {...props}/>  {/* destructuring using spread operators */}
+    </div>
+  );
+};
+```
+
+___
+
+
+## **Setting state correctly**
+> Calling this.setSate({obj to be updated}) -> does not guarantee that the object will be updated.  React will decide when it's ready to do so.
+> Calling this.state.variable -> does not guarantee it is the latest changed variable
+
+> Best way to do it is to pass an anonymous function to this.setState;
+> Recommended way (not optional - best pattern) when depending on old state
+``` jsx
+this.setState((prevState, props) => {
+  return { 
+    persons: persons, 
+    changeCounter:  prevState.changeCounter + 1
+  }
+});
+```
+___
+
+## **Using PropTypes**
+> npm install prop-types -> from react official team but not integrated in react core lib
+> works on both functional and class based components
+``` jsx
+import React, { Component } from "react";
+import PropTypes from 'prop-types';
+import classes from "./Person.module.css";
+import Aux from "../../../hoc/Aux";
+import withClass from '../../../hoc/withClass';
+
+class Person extends Component {
+  render() {
+    console.log("[Person.js] render");
+    return (
+      <Aux>
+        <p onClick={this.props.click}>
+          I'm a {this.props.name} and I am {this.props.age} years old!
+        </p>
+        <p>{this.props.children}</p>
+        <input
+          type="text"
+          onChange={this.props.changed}
+          value={this.props.name}
+        />
+      </Aux>
+    );
+  }
+}
+
+// Defining types for the props
+Person.propTypes = {
+  click: PropTypes.func,
+  changed: PropTypes.func,
+  name: PropTypes.string,
+  age: PropTypes.number
+};
+
+export default withClass(Person, classes.Person);
+```
+___
+
+
+## **Using Refs - class based components**
+> access jsx element - without 2 way binding
+> ref is like key - special react element
+
+> Method 1
+``` jsx
+class Person extends Component {
+
+  componentDidMount(){
+    this.inputElement.focus();
+  }
+
+  render() {
+    console.log("[Person.js] render");
+    return (
+      <Aux>
+        ...
+        <input
+          type="text"
+          ref={(inputEl) => {this.inputElement = inputEl}}
+          onChange={this.props.changed}
+          value={this.props.name}
+        />
+      </Aux>
+    );
+  }
+}
+```
+
+> Method 2 - using constructor - React.createRef()
+``` jsx
+class Person extends Component {
+  constructor(props){
+    super(props);
+    this.inputElementRef = React.createRef();
+  }
+
+  componentDidMount(){
+    this.inputElementRef.current.focus();
+  }
+
+  render() {
+    console.log("[Person.js] render");
+    return (
+      <Aux>
+        ...
+        <input
+          type="text"
+          ref={this.inputElementRef}
+          onChange={this.props.changed}
+          value={this.props.name}
+        />
+      </Aux>
+    );
+  }
+}
+```
+
+___
+
+## **Using Refs - functional components**
+> Import useRef 
+``` jsx
+Import React, { useEffect, useRef } from "react";
+...
+
+const cockpit = props => {
+  const toggleBtnRef = useRef(null);
+
+  useEffect(() => {
+    console.log("[Cockpit.js] useEffect");
+    toggleBtnRef.current.click();
+    return () => {
+      console.log("[Cockpit.js] cleanup work in useEffect");
+    };
+  }, []);
+  ...
+  return (
+    <div className={classes.Cockpit}>
+      ...
+      <button ref={toggleBtnRef} className={btnClass} onClick={props.clicked}>
+        Switch Name
+      </button>
+    </div>
+  );
+};
+
+export default React.memo(cockpit);
+
+```
+___
+
+## **Prop chains problems**
+> Use createcContext() - to bypass middle compoments
+> Make obj, array, string, number etc available without using props
+
+``` jsx
+import React from 'react';
+const authContext = React.createContext({
+    authenticated: false,
+    login: () => {}
+});
+export default authContext;
+```
+
+``` jsx
+...
+import AuthContext from "../context/auth-context";
+
+class App extends Component {
+  ...
+  state = {
+    ...
+    authenticated: false
+  };
+
+  ...
+
+  loginHandler = () => {
+    this.setState({ authenticated: true });
+  };
+
+  render() {
+    ...
+    return (
+      <Aux>
+        ...
+        <AuthContext.Provider
+          value={{
+            authenticated: this.state.authenticated, // state ref
+            login: this.loginHandler // function ref
+          }} // first {} is for dynamic content, second{} object that will be available to the consumers
+        >
+          {this.state.showCockpit ? (
+            <Cockpit
+              title={this.props.appTitle}
+              personsLength={this.state.persons.length}
+              showPersons={this.state.showPersons}
+              clicked={this.togglePersonsHandler}
+            />
+          ) : null}
+          {persons}
+        </AuthContext.Provider>
+      </Aux>
+    );
+  }
+}
+
+export default withClass(App, classes.App);
+```
+> Bypassing Persons.js, go straight to Person.js
+``` jsx
+...
+import AuthContext from "../../../context/auth-context";
+
+class Person extends Component {
+  ...
+  render() {
+    console.log("[Person.js] render");
+    return (
+      <Aux>
+        <AuthContext.Consumer>
+          {(context) => context.authenticated ? <p>Authenticated!</p> : <p>Please login</p>}
+        </AuthContext.Consumer>
+        ...
+      </Aux>
+    );
+  }
+}
+```
+
+``` jsx
+...
+import AuthContext from '../../context/auth-context';
+
+const cockpit = props => {
+  ...
+  return (
+    <div className={classes.Cockpit}>
+      ...
+      <AuthContext.Consumer>
+        {(context) => <button onClick={context.login}>Log in</button>}
+      </AuthContext.Consumer>
+    </div>
+  );
+};
+...
+```
+___
+
+## **More elegant way than above**
+
+
+
