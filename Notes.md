@@ -1023,6 +1023,54 @@ const cockpit = props => {
 ___
 
 ## **More elegant way than above**
+> context only accessible from jsx
+> Classed based components - use "static contextType"
+``` jsx
+...
+import AuthContext from "../../../context/auth-context";
 
+class Person extends Component {
+  ...
 
+  // need to be "static" and variable "contextType" should be as is otherwise won't work
+  static contextType = AuthContext;
+
+  componentDidMount(){
+    this.inputElementRef.current.focus();
+    console.log(this.context.authenticated);
+  }
+
+  render() {
+    console.log("[Person.js] render");
+    return (
+      <Aux>
+        {this.context.authenticated ? <p>Authenticated!</p> : <p>Please login</p>}
+        ...
+      </Aux>
+    );
+  }
+}
+...
+```
+
+> Functional components - use "useContext"
+``` jsx
+import React, { useEffect, useRef, useContext } from "react";
+...
+import AuthContext from '../../context/auth-context';
+
+const cockpit = props => {
+  ...
+  const authContext = useContext(AuthContext);
+  ...
+  return (
+    <div className={classes.Cockpit}>
+      ...
+      <button onClick={authContext.login}>Log in</button>
+    </div>
+  );
+};
+```
+
+____
 
