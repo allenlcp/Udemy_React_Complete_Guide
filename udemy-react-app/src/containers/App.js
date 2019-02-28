@@ -1,10 +1,26 @@
 import React, { Component } from "react";
 import classes from "./App.module.css";
-import Person from "../components/Persons/Person/Person";
 import Persons from "../components/Persons/Persons";
 import Cockpit from "../components/Cockpit/Cockpit";
 
 class App extends Component {
+
+  constructor(props){
+    super(props);
+    console.log('[App.js] constructor')
+    // old syntax - initializing state in constructor
+    // this.state = {
+    //   persons: [
+    //     { id: "asd", name: "Max", age: 28 },
+    //     { id: "daf", name: "Manu", age: 29 },
+    //     { id: "gfg", name: "Stephanie", age: 26 }
+    //   ],
+    //   otherState: "some other value",
+    //   showPersons: false
+    // };
+  }
+ 
+  // New syntax allow you to declare state outside constructor and react will automatically load initialize the state
   state = {
     persons: [
       { id: "asd", name: "Max", age: 28 },
@@ -12,8 +28,33 @@ class App extends Component {
       { id: "gfg", name: "Stephanie", age: 26 }
     ],
     otherState: "some other value",
-    showPersons: false
+    showPersons: false,
+    showCockpit: true
   };
+  
+  static getDerivedStateFromProps(props, state){
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  // componentWillMount(){
+  //   console.log('[App.js] componentWillMount');
+  // }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    console.log('[App.js] shouldComponentUpdate');
+    console.log(nextProps);
+    console.log(nextState);
+    return true;
+  }
+
+  componentDidUpdate(){
+    console.log('[App.js] componentDidUpdate');
+  }
 
   nameChangeHandler = (event, id) => {
     // could have used indexOf() here
@@ -54,6 +95,7 @@ class App extends Component {
   };
 
   render() {
+    console.log('[App.js] render...')
     let persons = null;
 
     if (this.state.showPersons) {
@@ -66,12 +108,13 @@ class App extends Component {
 
     return (
       <div className={classes.App}>
-        <Cockpit
+        <button onClick={() => {this.setState({showCockpit:false})}}>Remove Cockpit</button>
+        {this.state.showCockpit ? <Cockpit
           title={this.props.appTitle}
-          persons={this.state.persons}
+          personsLength={this.state.persons.length}
           showPersons={this.state.showPersons}
           clicked={this.togglePersonsHandler}
-        />
+        /> : null}
         {persons}
       </div>
     );

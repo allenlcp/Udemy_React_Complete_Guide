@@ -328,6 +328,7 @@ ___
 ___
 
 ## **Immutability**
+https://academind.com/learn/javascript/reference-vs-primitive-values/
 > **We should update state in a immutable fashion**
 > If not, we are passing as reference and mutating it
 ``` jsx
@@ -398,7 +399,7 @@ nameChangeHandler = (event, id) => {
 > Import radium StyleRoot for media queries
 
 ## **npm run eject**
-> config folder -> 
+> config folder -> configuration files, mainly webpack
 > scripts folders -> have files for each command in the package.json
 
 ## **CSS Module**
@@ -441,6 +442,173 @@ ___
 |render()||
 
 
-## **Component Lifecycle - Creation**
+## **Lifecycle - classed based**
 [lifecycle-creation-learning-card](lifecycle-creation-learning-card.pdf)
 
+[lifecycle-update-external-learning-card](lifecycle-update-external-learning-card.pdf)
+
+
+> Lifecycle for props changes 
+``` jsx
+static getDerivedStateFromProps(props, state){return state}
+
+// condition on whether to update of not
+shouldComponentUpdate(nextProps, nextState){return true}
+
+// Legacy hooks
+// componentWillReceiveProps(props){...}
+
+getSnapshotBeforeUpdate(nextProps, nextState){return obj}
+
+// Legacy hooks
+// componentWillUpdate(){}
+
+componentDidUpdate(prevProps, prevState, snapshot){...}
+```
+
+> Lifecycle for state changes 
+``` jsx
+shouldComponentUpdate(nextProps, nextState){return true;}
+
+componentDidUpdate(){}
+```
+
+
+
+## **Lifecycle - functional component**
+> Use useEffect from react
+``` jsx
+import React, {useEffect} from "react";
+```
+
+> pass a function to it
+``` jsx
+useEffect(() => {
+  console.log('[Cockpit.js] useEffect');
+});
+```
+
+> useEffect runs on every update
+> even on first render
+
+> Controlling useEffect behavior
+``` jsx
+useEffect(() => {
+  console.log('[Cockpit.js] useEffect');
+  // http request ...
+  setTimeout(() => {
+    alert('Saved data to cloud!');
+  }, 1000);
+}, [props.persons]);  // pass what needs to change to trigger
+```
+> Run only once 
+``` jsx
+useEffect(() => {
+  console.log('[Cockpit.js] useEffect');
+  // http request ...
+  setTimeout(() => {
+    alert('Saved data to cloud!');
+  }, 1000);
+}, []);  // pass empty array - will run once but won't re-run as no object is specify for re-run, this the empty array
+```
+
+> Clean up work 
+>* Class based
+``` jsx
+componentWillUnmount(){}
+```
+> Functional
+> Here it runs BEFORE the main useEffect function runs, but AFTER the (first) render cycle!
+``` jsx
+useEffect(() => {
+  console.log('[Cockpit.js] useEffect');
+  // http request ...
+  setTimeout(() => {
+    alert('Saved data to cloud!');
+  }, 1000);
+  return () => {
+    console.log('[Cockpit.js] cleanup work in useEffect');
+  }
+}, []);  // -> [] is for when component gets destroyed
+```
+
+> Run cycle
+``` jsx
+useEffect(() => {
+  console.log("[Cockpit.js] 2nd useEffect");
+  return () => {
+    console.log("[Cockpit.js] cleanup work in 2nd useEffect");
+  };
+});
+```
+> First run
+``` jsx
+[Cockpit.js] 2nd useEffect
+```
+> Second run
+``` jsx
+[Cockpit.js] cleanup work in 2nd useEffect  // -> return runs first 
+[Cockpit.js] 2nd useEffect
+```
+
+___
+
+
+## **Performance optimization**
+> class based component - shouldComponentUpdate()
+``` jsx
+shouldComponentUpdate(nextProps, nextState){
+  console.log('[Persons.js] shouldComponentUpdate');
+  if (nextProps.persons !== this.props.persons){
+    return true;
+  } else {
+    return false;
+  }
+}
+```
+
+> functional component - use React.memo();
+``` jsx
+export default React.memo(cockpit);
+```
+___
+
+## **PureComponent**
+> With purecomponent we do not need to implement shouldComponentUpdate() with all the checks - it automatically does it
+> Instead of doing this:
+``` jsx
+shouldComponentUpdate(nextProps, nextState){
+  console.log('[Persons.js] shouldComponentUpdate');
+  console.log(nextProps);
+  console.log(nextState);
+  if (
+    nextProps.persons !== this.props.persons ||
+    nextProps.changed !== this.props.changed ||
+    nextProps.click !== this.props.click 
+  ){
+    return true;
+  } else {
+    return false;
+  }
+}
+```
+> We do this:
+``` jsx
+import React, { PureComponent } from "react";
+
+class Persons extends PureComponent {...}
+
+export default Persons;
+```
+
+___
+
+## **How react updates the real dom**
+
+![HowReactUpdatesTheDom](resouces/pdf/HowReactUpdatesTheDom.png)
+
+___
+
+
+## **Rendering Adjacent JSX Elements**
+[react-adjacent-jsx](resouces/pdf/react-adjacent-jsx.pdf)
