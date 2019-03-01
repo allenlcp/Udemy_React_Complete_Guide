@@ -606,7 +606,7 @@ ___
 
 ## **How react updates the real dom**
 
-![HowReactUpdatesTheDom](resources/pdf/HowReactUpdatesTheDom.png)
+![HowReactUpdatesTheDom](resources/images/HowReactUpdatesTheDom.png)
 
 ___
 
