@@ -1098,3 +1098,35 @@ ____
 
 ___
 
+## **http / ajax**
+> componentDidMount() -> best place to send http request
+
+## **axios**
+> axios Interceptors - like AOP
+``` javascript
+axios.interceptors.request.use((request) => {
+    console.log(request);
+    // Edit request config
+    return request;
+}, error => {
+    console.log(error);
+    return Promise.reject(error);
+});
+
+axios.interceptors.response.use((response) => {
+    console.log(response);
+    // Edit response config
+    return response;
+}, error => {
+    console.log(error);
+    return Promise.reject(error);
+});
+```
+
+Removing Interceptors
+Section 9, Lecture 196
+You learned how to add an interceptor, getting rid of one is also easy. Simply store the reference to the interceptor in a variable and call eject  with that reference as an argument, to remove it (more info: https://github.com/axios/axios#interceptors):
+``` javascript
+var myInterceptor = axios.interceptors.request.use(function () {/*...*/});
+axios.interceptors.request.eject(myInterceptor);
+```
