@@ -1245,7 +1245,7 @@ export default withRouter(post);
 > relative path - need to dynamically build it
 ``` jsx
  <Link to={{
-    pathname: this.props.path.url + "/new-post" // -> dynamically building the path
+    pathname: this.props.match.url + "/new-post" // -> dynamically building the path
 }}>New Post</Link>
 ```
 ``` text
@@ -1272,4 +1272,268 @@ To change this behavior, you have to find out which path you're on and add the n
 There's no better or worse way of creating Link paths - choose the one you need. Sometimes, you want to ensure that you always load the same path, no matter on which path you already are => Use absolute paths in this scenario.
 
 Use relative paths if you want to navigate relative to your existing path.
+```
+___
+
+## **Styling routes**
+> Use {NavLink}
+___
+
+## **Passing route parameters**
+
+``` text
+Parsing Query Parameters & the Fragment
+Section 11, Lecture 228
+You learned how to extract route parameters (=> :id  etc). 
+
+But how do you extract search (also referred to as "query") parameters (=> ?something=somevalue  at the end of the URL)? How do you extract the fragment (=> #something  at the end of the URL)?
+
+Query Params:
+You can pass them easily like this:
+
+<Link to="/my-path?start=5">Go to Start</Link> 
+
+or
+
+<Link 
+    to={‌{
+        pathname: '/my-path',
+        search: '?start=5'
+    }}
+    >Go to Start</Link>
+React router makes it easy to get access to the search string: props.location.search .
+
+But that will only give you something like ?start=5 
+
+You probably want to get the key-value pair, without the ?  and the = . Here's a snippet which allows you to easily extract that information:
+
+componentDidMount() {
+    const query = new URLSearchParams(this.props.location.search);
+    for (let param of query.entries()) {
+        console.log(param); // yields ['start', '5']
+    }
+}
+URLSearchParams  is a built-in object, shipping with vanilla JavaScript. It returns an object, which exposes the entries()  method. entries()  returns an Iterator - basically a construct which can be used in a for...of...  loop (as shown above).
+
+When looping through query.entries() , you get arrays where the first element is the key name (e.g. start ) and the second element is the assigned value (e.g. 5 ).
+
+Fragment:
+You can pass it easily like this:
+
+<Link to="/my-path#start-position">Go to Start</Link> 
+
+or
+
+<Link 
+    to={‌{
+        pathname: '/my-path',
+        hash: 'start-position'
+    }}
+    >Go to Start</Link>
+React router makes it easy to extract the fragment. You can simply access props.location.hash .
+```
+___
+
+> Use {switch} to have only one path rendered.
+> Order is important - first match will be used to render
+``` jsx
+<Route path="/" exact component={Posts} />
+<Switch>
+  <Route path="/new-post" component={NewPost} />
+  <Route path="/:id" exact component={FullPost} />
+</Switch>
+<Route path="/test" exact component={Test} />
+```
+___
+
+## **Navigating Programmatically**
+> use this.props.history.push -> mostly used when an operation finishes
+``` jsx
+this.props.history.push('/'+id); 
+```
+OR
+``` jsx
+this.props.history.push({
+  pathname: '/' + id
+});
+```
+___
+
+## **Nested Routes**
+> 
+``` jsx
+// Update on routing
+componentDidMount = () => {
+  this.loadData();
+};
+
+// Update on new props
+componentDidUpdate = () => {
+  this.loadData();
+};
+```
+> use relative paths
+``` jsx
+<Route path={this.props.match.url + "/:id"} exact component={FullPost} />
+```
+
+____
+
+## **Redirecting request**
+> Method 1 - use {Redirect}
+``` jsx
+<Switch>
+  <Route path="/new-post" component={NewPost} />
+  <Route path="/posts" component={Posts} />
+  <Redirect from="/" to="/posts" />
+</Switch>
+```
+
+> Method 2 - conditional redirection
+>* Redirect used outside switch statement - we only have the "to" options
+``` jsx
+...
+import { Redirect } from "react-router-dom";
+
+class NewPost extends Component {
+  state = {
+    title: "",
+    content: "",
+    author: "Max",
+    submitted: false
+  };
+
+  componentDidMount = () => {
+    console.log(this.props);
+  };
+
+  postDataHandler = () => {
+    const post = {
+      title: this.state.title,
+      body: this.state.body,
+      author: this.state.author
+    };
+    axios.post(`/posts`, post).then(response => {
+      console.log(response);
+      this.setState({ submitted: true });
+    });
+  };
+
+  render() {
+    let redirect = null;
+
+    if (this.state.redirect) {
+      redirect = <Redirect to="/posts" />;
+    }
+    return (
+      <div className="NewPost">
+        {redirect}
+        <h1>Add a Post</h1>
+        <label>Title</label>
+        ...
+      </div>
+    );
+  }
+}
+
+export default NewPost;
+
+```
+
+> Method 3 - using history prop 
+``` jsx
+this.props.history.push("/posts");
+```
+``` jsx
+this.props.history.replace("/posts");
+```
+___
+
+## **Navigation Guards**
+> In switch 
+``` jsx
+<Switch>
+  {this.state.auth ? <Route path="/new-post" component={NewPost} /> : null}
+  <Route path="/posts" component={Posts} />
+  <Redirect from="/" to="/posts" /> 
+</Switch>
+```
+> Do it on didmount()
+``` jsx
+componentDidMount = () => {
+  // if unauth => this.props.history.replace('/posts');
+};
+```
+___
+
+## **404 case**
+> Use route without path - need to be last and won't work with redirect "/"
+``` jsx
+<Switch>
+  {this.state.auth ? <Route path="/new-post" component={NewPost} /> : null}
+  <Route path="/posts" component={Posts} />
+  <Route render={() => <h1>Not Found</h1>} /> {/* -> should come last */}
+</Switch>
+```
+
+___
+
+## **Loading routes lazily**
+> code splitting or lazy loading - reactjs 4 and above 
+``` jsx
+import React, { Component } from "react";
+
+const asynComponent = importComponent => {
+  return class extends Component {
+    state = {
+      component: null
+    };
+
+    componentDidMount = () => {
+      importComponent().then(cmp => {
+        this.setState({ component: cmp.default });
+      });
+    };
+    render() {
+      const C = this.state.component;
+      return C ? <C {...this.props} /> : null;
+    }
+  };
+};
+
+export default asynComponent;
+```
+``` jsx
+...
+import asynComponent from '../../hoc/aysnComponent';
+
+// Only import when needed
+const AsyncNewPost = asynComponent(() => {
+  return import("./NewPost/NewPost");
+});
+
+class Blog extends Component {
+  state = {
+    auth: true
+  }
+
+  render() {
+    return (
+      <div className="Blog">
+        ...
+         <Switch>
+          {this.state.auth ? <Route path="/new-post" component={AsyncNewPost} /> : null}
+          ...
+        </Switch>
+      </div>
+    );
+  }
+}
+
+export default Blog;
+```
+
+> React > 16.6 - other way
+``` jsx
+
 ```
