@@ -1534,6 +1534,148 @@ export default Blog;
 ```
 
 > React > 16.6 - other way
+> use {Suspense}
+> Example used in routing
 ``` jsx
+import React, { Component, Suspense } from "react";
+import { BrowserRouter, Route, NavLink } from "react-router-dom";
 
+import User from "./containers/User";
+import Welcome from "./containers/Welcome";
+
+const Posts = React.lazy(() => import("./containers/Posts"));
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <React.Fragment>
+          <nav>
+            <NavLink to="/user">User Page</NavLink> |&nbsp;
+            <NavLink to="/posts">Posts Page</NavLink>
+          </nav>
+          <Route path="/" component={Welcome} exact />
+          <Route path="/user" component={User} />
+          <Route
+            path="/posts"
+            render={() => (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Posts />
+              </Suspense>
+            )}
+          />
+        </React.Fragment>
+      </BrowserRouter>
+    );
+  }
+}
+
+export default App;
 ```
+> Not in route
+
+``` jsx
+import React, { Component, Suspense } from "react";
+import User from "./containers/User";
+const Posts = React.lazy(() => import("./containers/Posts"));
+
+class App extends Component {
+  state = {
+    showPosts: false
+  };
+  modeHandler = () => {
+    this.setState(prevState => {
+      return { showPosts: !prevState.showPosts };
+    });
+  };
+  render() {
+    return (
+      <React.Fragment>
+        <button onClick={this.modeHandler}>Toggle Mode</button>
+        {this.state.showPosts ? (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Posts />
+          </Suspense>
+        ) : (
+          <User />
+        )}
+      </React.Fragment>
+    );
+  }
+}
+
+export default App;
+```
+___
+
+## **Routing & The Server (Deployment)**
+> Server should always return html file - even 404
+> add basename in <BrowserRouter> if need
+``` jsx
+<BrowserRouter basename="/my-app">
+  <div className="App">
+    <Blog />
+  </div>
+</BrowserRouter>
+```
+___
+
+## **Passing data in path**
+> Setup routes
+``` jsx
+<Route path={"/courses/:courseId/:courseTitle"} component={Course} />
+```
+> Building details in the url
+``` jsx
+<Link to={this.props.match.url + "/" + course.id + "/" + course.title} key={course.id}>
+  <article className="Course">{course.title}</article>
+</Link>
+```
+> Accessing the data from the params
+``` jsx
+<div>
+    <h1>{this.props.match.params.courseTitle}</h1>
+    <p>You selected the Course with ID: {this.props.match.params.courseId}</p>
+</div>
+```
+
+## **Passing as query params**
+> Setup routes
+``` jsx
+<Route path={"/courses/:courseId"} component={Course} />
+```
+> Building details in search
+``` jsx
+<Link to={{
+    pathname: this.props.match.url + "/" + course.id,
+    search: '?title=' + course.title
+}} key={course.id}>
+  <article className="Course">{course.title}</article>
+</Link>
+```
+> Accessing the data as query params
+``` jsx
+state = {
+    courseTitle: ''
+}
+
+componentDidMount = () => {
+    const query = new URLSearchParams(this.props.location.search);
+    for(let param of query.entries()){
+        this.setState({courseTitle: param[1]});
+    }
+}
+
+render () {
+    return (
+        <div>
+            <h1>{this.state.courseTitle}</h1>
+            <p>You selected the Course with ID: {this.props.match.params.courseId}</p>
+        </div>
+    );
+}
+```
+
+___
+
+## **Forms and Validation**
