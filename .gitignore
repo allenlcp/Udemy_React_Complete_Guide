@@ -5,6 +5,7 @@
 Source_Code/
 apache-tomcat-9.0.16/
 out/
+package-lock.json
 
 ### Maven generated
 target/
