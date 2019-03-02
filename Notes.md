@@ -1130,3 +1130,8 @@ You learned how to add an interceptor, getting rid of one is also easy. Simply s
 var myInterceptor = axios.interceptors.request.use(function () {/*...*/});
 axios.interceptors.request.eject(myInterceptor);
 ```
+___
+
+## **Routing**
+
+![routing-learning-card](resources/pdf/routing-learning-card.pdf)
