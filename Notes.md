@@ -1880,3 +1880,6 @@ var newCollection = update(collection, {2: {a: {$splice: [[1, 1, 13, 14]]}}});
 They can provide a useful alternative to writing manual immutable update logic.
 ___
 
+**Understanding State Types**
+[state-types](resources/pdf/state-types.pdf)
+
