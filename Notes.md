@@ -1685,5 +1685,32 @@ ___
 ## **Redux**
 [Redux](resources/pdf/redux-learning-card.pdf)
 
+Use npm i --save redux
 
+0. Create initial state
+``` jsx
+const initialState = {
+    counter: 0
+}
+```
+1. Create reducer
+``` jsx
+
+const reducer = (state = initialState, action) => {
+    return state;
+};
+```
+2. Create store
+``` jsx
+import { createStore } from "redux";
+const store = createStore(reducer);
+```
+
+Use npm i --save react-redux
+
+3. Connect store to react
+``` jsx
+import { Provider } from "react-redux";
+<Provider store={store}><App /></Provider>
+```
 
