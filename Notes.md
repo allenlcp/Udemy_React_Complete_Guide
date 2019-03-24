@@ -1679,3 +1679,11 @@ render () {
 ___
 
 ## **Forms and Validation**
+
+___
+
+## **Redux**
+[Redux](resources/pdf/redux-learning-card.pdf)
+
+
+
