@@ -1966,10 +1966,19 @@ const mapDispatchToProps = dispatch => {
 ```
 
 ## **Executing Async Code**
+SETUP
 Use npm i --save redux-thunk
 
-It dispatch a function rather than the action itself. 
+``` jsx
+...
+import thunk from "redux-thunk";
+...
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(logger, thunk)));
+...
+```
 
+
+It dispatch a function rather than the action itself. 
 ``` jsx
 // sync code
 export const saveResult = res => {
