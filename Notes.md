@@ -1887,3 +1887,131 @@ ___
 
 ## **Advanced Redux**
 
+Middleware
+``` jsx
+import React from "react";
+import ReactDOM from "react-dom";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
+import "./index.css";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+import counterReducer from "./store/reducers/counter";
+import resultReducer from "./store/reducers/result";
+
+const rootReducer = combineReducers({
+    ctr: counterReducer,
+    res: resultReducer
+});
+
+const logger = (store) => {
+    return next => {
+        return action => {
+            console.log('[Middleware] Dispatching', action);
+            const result = next(action);
+            console.log('[Middleware] next state', store.getState());
+            return result;
+        }
+    }
+};
+
+const store = createStore(rootReducer, applyMiddleware(logger));
+
+ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById("root"));
+
+serviceWorker.unregister();
+```
+
+React DevTools
+https://github.com/zalmoxisus/redux-devtools-extension
+
+Setup
+``` jsx
+...
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
+...
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(logger)));
+...
+```
+
+## **Action Creators**
+Define Action Creators - Outsource action 
+``` jsx
+export const increment = () => {
+  return {
+    type: INCREMENT
+  };
+};
+...
+export const deleteResult = resElId => {
+  return {
+    type: DELETE_RESULT,
+    resultElId: resElId
+  };
+};
+```
+Access Action Creators - import and call function
+``` jsx
+import * as actionCreators from '../../store/actions/actions';
+...
+const mapDispatchToProps = dispatch => {
+    return {
+        onIncrementCounter: () => dispatch(actionCreators.increment()),
+        ...
+        onDeleteResult: (id) => dispatch(actionCreators.deleteResult(id))
+    };
+};
+```
+
+## **Executing Async Code**
+Use npm i --save redux-thunk
+
+It dispatch a function rather than the action itself. 
+
+``` jsx
+// sync code
+export const saveResult = res => {
+  return {
+    type: STORE_RESULT,
+    result: res
+  };
+};
+
+// async code
+export const storeResult = res => {
+  return (dispatch, getState) => {
+    setTimeout(() => {
+      const oldCounter = getState().ctr.counter;
+      console.log(oldCounter);
+      dispatch(saveResult(res));
+    }, 2000);
+  };
+};
+```
+
+## **Where to put transformation logic**
+
+| Action Creators | Reducer |
+|---|---|
+| Can run Async Code | Pure, Sync Code Only |
+| Shouldn't prepare the state update too much |  Core Redux Concept: Redux update the state |
+
+
+## **Access state from thunk**
+Has getState as second parameter - best use as fallback, otherwise best to parse the data around
+``` jsx
+// async code
+export const storeResult = res => {
+  return (dispatch, getState) => {
+    setTimeout(() => {
+      const oldCounter = getState().ctr.counter;
+      console.log(oldCounter);
+      dispatch(saveResult(res));
+    }, 2000);
+  };
+};
+```
+
+## **Utility functions**
