@@ -1883,3 +1883,7 @@ ___
 **Understanding State Types**
 [state-types](resources/pdf/state-types.pdf)
 
+___
+
+## **Advanced Redux**
+
