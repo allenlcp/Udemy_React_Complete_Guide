@@ -22,12 +22,12 @@ export const purchaseOrderStart = () => {
   }
 }
 
-export const purchaseBurger = orderData => {
+export const purchaseBurger = (orderData, token) => {
   return dispatch => {
     dispatch(purchaseOrderStart());
     axios
       .post(
-        `https://react-my-burger-server.firebaseio.com/orders.json`,
+        `/orders.json?auth=${token}`,
         orderData
       )
       .then(response => {
@@ -67,11 +67,11 @@ export const fetchOrderStart = () => {
   };
 };
 
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
   return dispatch => {
     dispatch(fetchOrderStart());
     axios
-    .get(`/orders.json`)
+    .get(`/orders.json?auth=` + token)
     .then(res => {
         const fetchedOrders = [];
         for (let key in res.data){
