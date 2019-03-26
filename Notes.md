@@ -2033,11 +2033,48 @@ ___
 Testing tools
 Test Runner -> executes tests and provides validation library -> "Jest" comes part of create-react-app
 
+https://jestjs.io/
+
 Testing Utilities - "Simulates" the React App (mounts, component, allows you to dig into the DOM) -> "React Test Utils" comes part of create-react-app, however "Enzyme" is preferred (developed by airbnb)
+
+https://airbnb.io/enzyme/docs/api/
 
 Use npm i --save enzyme react-test-renderer enzyme-adapter-react-16
 
 Create file "componentFileName.test.js" -> test extension is important
 
 Test file uses "Jest", however importing it is not required.
+``` jsx
+import React from 'react';
 
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+import NavigationItems from './NavigationItems';
+import NavigationItem from './NavigationItem/NavigationItem';
+
+configure({adapter: new Adapter()});
+
+describe('<NavigationItems>', () => {
+    let wrapper;
+
+    beforeEach(() => {
+        wrapper = shallow(<NavigationItems />);
+    });
+
+    it('should render two <NavigationItem/> items if not authenticated', () => {
+        expect(wrapper.find(NavigationItem)).toHaveLength(2);
+    });
+
+    it('should render three <NavigationItem/> items if authenticated', () => {
+        // wrapper = shallow(<NavigationItems isAuthenticated />);
+        wrapper.setProps({isAuthenticated: true});
+        expect(wrapper.find(NavigationItem)).toHaveLength(3);
+    });
+
+    it('checking logout link when authenticated', () => {
+        wrapper.setProps({isAuthenticated: true});
+        expect(wrapper.contains(<NavigationItem link='/logout'>Logout</NavigationItem>)).toEqual(true);
+    });
+});
+```
