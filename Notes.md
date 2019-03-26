@@ -2044,6 +2044,9 @@ Use npm i --save enzyme react-test-renderer enzyme-adapter-react-16
 Create file "componentFileName.test.js" -> test extension is important
 
 Test file uses "Jest", however importing it is not required.
+
+
+**Test Component**
 ``` jsx
 import React from 'react';
 
@@ -2076,5 +2079,80 @@ describe('<NavigationItems>', () => {
         wrapper.setProps({isAuthenticated: true});
         expect(wrapper.contains(<NavigationItem link='/logout'>Logout</NavigationItem>)).toEqual(true);
     });
+});
+```
+
+**Test Containers**
+Just need to export the class, so that it is accessible independently
+``` jsx
+...
+export class BurgerBuilder extends Component {
+  ...
+}
+...
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
+```
+Call class and test
+``` jsx
+import React from 'react';
+
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { BurgerBuilder } from './BurgerBuilder';
+import BuildControls from '../../components/Burger/BuildControls/BuildControls';
+
+configure({adapter: new Adapter()});
+
+describe('<BurgerBuilder>', () => {
+    let wrapper;
+
+    beforeEach(() => {
+        wrapper = shallow(<BurgerBuilder onInitIngredients={() => {}}/>);
+    });
+
+    it('should render <BuildControls/> when receiving ingredients', () => {
+        wrapper.setProps({ings: {salad: 0}});
+        expect(wrapper.find(BuildControls)).toHaveLength(1);
+    });
+});
+```
+
+**Test Redux - reducers**
+* We mainly test the functions / reducers for redux
+* Which are simple functions
+``` jsx
+import reducer from './auth';
+import * as actionTypes from '../actions/actionTypes';
+
+describe('auth reducer', () => {
+    it('should return the initial state', () => {
+        expect(reducer(undefined, {})).toEqual({
+            token: null,
+            userId: null,
+            error: null,
+            loading: false,
+            authRedirectPath: '/'
+        });
+    })
+
+    it('should store token upon login', () => {
+        expect(reducer({
+            token: null,
+            userId: null,
+            error: null,
+            loading: false,
+            authRedirectPath: '/'
+        }, {
+            type: actionTypes.AUTH_SUCCESS, 
+            idToken: 'some-token',
+            userId: 'some-user-id'
+        })).toEqual({
+            token: 'some-token',
+            userId: 'some-user-id',
+            error: null,
+            loading: false,
+            authRedirectPath: '/'
+        });
+    })
 });
 ```
