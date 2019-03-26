@@ -71,7 +71,7 @@ export const fetchOrders = () => {
   return dispatch => {
     dispatch(fetchOrderStart());
     axios
-    .get(`https://react-my-burger-server.firebaseio.com/orders.json`)
+    .get(`/orders.json`)
     .then(res => {
         const fetchedOrders = [];
         for (let key in res.data){

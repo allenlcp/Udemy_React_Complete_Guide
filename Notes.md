@@ -2022,5 +2022,8 @@ export const storeResult = res => {
   };
 };
 ```
+___
 
-## **Utility functions**
+## **Authentication in React**
+
+
