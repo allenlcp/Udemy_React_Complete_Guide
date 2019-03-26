@@ -2026,4 +2026,18 @@ ___
 
 ## **Authentication in React**
 
+___
+
+## **Unit test in React**
+
+Testing tools
+Test Runner -> executes tests and provides validation library -> "Jest" comes part of create-react-app
+
+Testing Utilities - "Simulates" the React App (mounts, component, allows you to dig into the DOM) -> "React Test Utils" comes part of create-react-app, however "Enzyme" is preferred (developed by airbnb)
+
+Use npm i --save enzyme react-test-renderer enzyme-adapter-react-16
+
+Create file "componentFileName.test.js" -> test extension is important
+
+Test file uses "Jest", however importing it is not required.
 
