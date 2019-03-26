@@ -2156,3 +2156,15 @@ describe('auth reducer', () => {
     })
 });
 ```
+___
+
+## **Deploying React App**
+
+Steps
+* Check (&adjust) Basepath -> <BrowserRouter basename="/my-app/">
+
+* Build * Optimize Project -> "npm run build" in create-react-app project
+
+* Sever must ALWAYS server index.html (also for 404 cases) -> To ensure the Routing works correctly
+
+* Upload Build Artifacts to (static) Sever -> In "/build" folder when using create-react-app
