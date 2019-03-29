@@ -2183,3 +2183,436 @@ Conversion is annoying
 Lifecycle hooks can be hard to use
 
 ___
+
+Use {useState}
+``` jsx
+import React, { useState } from 'react';
+```
+
+Calling useState(), returns an array with two elements
+First element - useState[0] - is the current state
+Second element - useState[1] - is a function that can be used to manipulate the first element
+``` jsx
+const inputState = useState('');
+```
+
+Using elements of useState()
+``` jsx
+<input type="text" placeholder="Todo" onChange={inputChangeHandler} value={inputState[0]}/>
+
+const inputChangeHandler = (event) => {
+    inputState[1](event.target.value);
+}
+```
+
+Adding array destructuring
+``` jsx
+const [todoName, setTodoName] = useState('');
+
+const inputChangeHandler = (event) => {
+    setTodoName(event.target.value);
+}
+
+return (
+<React.Fragment>
+    <input type="text" placeholder="Todo" onChange={inputChangeHandler} value={todoName}/>
+    <button type="button">Add</button>
+    <ul/>
+</React.Fragment>
+)
+```
+
+Using multiple state - recommended
+``` jsx
+const [todoName, setTodoName] = useState('');
+const [todoList, setTodoList] = useState([]);
+
+const inputChangeHandler = (event) => {
+    setTodoName(event.target.value);
+}
+
+const todoAddHandler = () => {
+    setTodoList(todoList.concat(todoName));
+}
+
+return (
+<React.Fragment>
+    <input type="text" placeholder="Todo" onChange={inputChangeHandler} value={todoName}/>
+    <button type="button" onClick={todoAddHandler}>Add</button>
+    <ul>
+        {todoList.map((el,i) => <li key={i}>{el}</li>)}
+    </ul>
+</React.Fragment>
+```
+
+Using one state
+There is no automatic updates - need to manually merge state
+``` jsx
+const [todoState, setTodoState] = useState({
+    userInput: '',
+    todoList: []
+});
+
+const inputChangeHandler = (event) => {
+    setTodoState({userInput: event.target.value, todoList: todoState.todoList});
+}
+
+const todoAddHandler = () => {
+    setTodoState({
+        userInput: todoState.userInput,
+        todoList: todoState.todoList.concat(todoState.userInput)
+    });
+}
+
+return (
+<React.Fragment>
+    <input type="text" placeholder="Todo" onChange={inputChangeHandler} value={todoState.userInput}/>
+    <button type="button" onClick={todoAddHandler}>Add</button>
+    <ul>
+        {todoState.todoList.map((el,i) => <li key={i}>{el}</li>)}
+    </ul>
+</React.Fragment>
+)
+```
+___
+
+## **The "Rules of Hooks**
+* Should only use useState() at the top/root level of the component function body
+* It should be a component function
+* Must not call useState() in a function of a function
+* Must not call useState() in an if statement
+* Must not call useState() in a for loops
+* Basically it cannot be nested
+___
+
+## **Sending Data via http**
+``` jsx
+const todoAddHandler = () => {
+  setTodoList(todoList.concat(todoName));
+  axios.post('https://react-hooks-39657.firebaseio.com/todos.json', {name: todoName})
+  .then(res => {
+      console.log(res);
+  })
+  .catch(err => {
+      console.log(err);
+  })
+};
+```
+___
+
+## **useEffect() hooks**
+* runs after render cycle - can get infinite loop
+* uesEffect(arg1, arg2)
+>- arg1 - is a function that will run after render cycle
+>- arg2 - is an array of values we want to have a look at before re-rendering
+
+``` text
+useEffect(() => {...}) --> will re-render every time any state changes
+useEffect(() => {...}, []) --> will render once but won't re-render on state change
+useEffect(() => {...}, [todoName]) --> will only re-render when state of "todoName" changes
+```
+``` jsx
+const [todoName, setTodoName] = useState("");
+const [todoList, setTodoList] = useState([]);
+
+useEffect(() => {
+  axios.get('https://react-hooks-39657.firebaseio.com/todos.json').then(result => {
+      console.log(result);
+      const todoData = result.data;
+      const todos = [];
+      for (const key in todoData){
+          todos.push({
+              id: key,
+              name: todoData[key].name
+          })
+      }
+      setTodoList(todos);
+  });  
+}, [todoName]);
+```
+___
+
+## **Effect cleanup**
+* add return statement in arg1 of useEffect()
+* will be triggered before the above function is run
+Example 1
+``` jsx
+useEffect(() => {
+  axios.get('https://react-hooks-39657.firebaseio.com/todos.json').then(result => {
+      console.log(result);
+      const todoData = result.data;
+      const todos = [];
+      for (const key in todoData){
+          todos.push({
+              id: key,
+              name: todoData[key].name
+          })
+      }
+      setTodoList(todos);
+  });  
+  return () => {
+      console.log('Cleanup');
+  }
+}, [todoName]);
+```
+
+Example 2
+``` jsx
+const mouseMoveHandler = event => {
+  console.log(event.clientX, event.clientY);
+};
+
+useEffect(() => {
+    document.addEventListener('mousemove', mouseMoveHandler)
+    return () => {
+      document.removeEventListener('mousemove', mouseMoveHandler)
+    }
+}, []);
+```
+
+___
+
+## **useContext() hook**
+
+Create context
+``` jsx
+import React from 'react';
+
+const authContext = React.createContext({status: false, login: () => {}});
+
+export default authContext;
+```
+
+Setup provider
+``` jsx
+...
+import AuthContext from "./auth-context";
+
+const App = props => {
+  ...
+  const [authStatus, setAuthStatus] = useState(false);
+  ...
+  const login = () => {
+    setAuthStatus(true);
+  }
+
+  return (
+    <div className="App">
+      <AuthContext.Provider value={{status: authStatus, login: login}}>
+        ...
+      </AuthContext.Provider>
+    </div>
+  );
+};
+
+export default App;
+```
+
+Access context data
+Example 1
+``` jsx
+import React, { useContext } from 'react';
+import AuthContext from '../auth-context';
+
+const header = props => {
+    const auth = useContext(AuthContext);
+
+    return (
+        <header>
+            {auth.status ? 
+            <button onClick={props.onLoadTodos}>Todo List</button> : null}
+            <button onClick={props.onLoadAuth}>Auth</button>
+        </header>
+    )   
+}
+
+export default header;
+```
+
+Example 2
+``` jsx
+import React, { useContext } from 'react';
+import AuthContext from '../auth-context';
+
+const auth = props => {
+    const auth = useContext(AuthContext);
+
+    return (
+        <button onClick={auth.login}>Log in!</button>
+    )
+}
+
+export default auth;
+```
+
+## **useReducer() hook**
+``` jsx
+import React, { useState, useEffect, useReducer } from "react";
+import axios from "axios";
+
+const todo = props => {
+  const [todoName, setTodoName] = useState("");
+  const [submittedTodo, setSubmittedTodo] = useState(null);
+  // const [todoList, setTodoList] = useState([]);
+
+  const todoListReducer = (state, action) => {
+    switch (action.type) {
+      case "ADD":
+        return state.concat(action.payload);
+      case "SET":
+        return action.payload;
+      case "REMOVE":
+        return state.filter(todo => todo.id !== action.payload.id);
+      default:
+        return state;
+    }
+  };
+
+  const [todoList, dispatch] = useReducer(todoListReducer, []);
+
+  useEffect(() => {
+    axios
+      .get("https://react-hooks-39657.firebaseio.com/todos.json")
+      .then(result => {
+        console.log(result);
+        const todoData = result.data;
+        const todos = [];
+        for (const key in todoData) {
+          todos.push({
+            id: key,
+            name: todoData[key].name
+          });
+        }
+        dispatch({ type: "SET", payload: todos });
+      });
+  }, []);
+  ...
+  useEffect(() => {
+    if (submittedTodo) {
+      dispatch({type: 'ADD', payload: submittedTodo});
+    }
+  }, [submittedTodo]);
+  ...
+  const todoAddHandler = () => {
+    axios
+      .post("https://react-hooks-39657.firebaseio.com/todos.json", {
+        name: todoName
+      })
+      .then(res => {
+        setTimeout(() => {
+          const todoItem = {
+            id: res.data.name,
+            name: todoName
+          };
+          setSubmittedTodo(todoItem);
+        }, 5000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+...
+```
+
+## **useReducer() and useState()**
+With the reducer - we always get the latest state (guaranteed by React internals)
+Therefore, we don't need to use 'useEffect()' to manage submitted state
+``` jsx
+...
+const todo = props => {
+  const [todoName, setTodoName] = useState("");
+  // const [submittedTodo, setSubmittedTodo] = useState(null);
+  // const [todoList, setTodoList] = useState([]);
+
+  const todoListReducer = (state, action) => {
+    switch (action.type) {
+      case "ADD":
+        return state.concat(action.payload);
+      case "SET":
+        return action.payload;
+      case "REMOVE":
+        return state.filter(todo => todo.id !== action.payload);
+      default:
+        return state;
+    }
+  };
+
+  const [todoList, dispatch] = useReducer(todoListReducer, []);
+
+  useEffect(() => {
+    axios
+      .get("https://react-hooks-39657.firebaseio.com/todos.json")
+      .then(result => {
+        console.log(result);
+        const todoData = result.data;
+        const todos = [];
+        for (const key in todoData) {
+          todos.push({
+            id: key,
+            name: todoData[key].name
+          });
+        }
+        dispatch({ type: "SET", payload: todos });
+      });
+  }, []);
+
+  const inputChangeHandler = event => {
+    setTodoName(event.target.value);
+  };
+
+  const todoAddHandler = () => {
+    axios
+      .post("https://react-hooks-39657.firebaseio.com/todos.json", {
+        name: todoName
+      })
+      .then(res => {
+        setTimeout(() => {
+          const todoItem = {
+            id: res.data.name,
+            name: todoName
+          };
+          dispatch({type: 'ADD', payload: todoItem});
+        }, 5000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const todoRemoveHandler = todoId => {
+    axios
+      .delete(`https://react-hooks-39657.firebaseio.com/todos/${todoId}.json`)
+      .then(res => {
+        dispatch({
+          type: "REMOVE",
+          payload: todoId
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <React.Fragment>
+      <input
+        type="text"
+        placeholder="Todo"
+        onChange={inputChangeHandler}
+        value={todoName}
+      />
+      <button type="button" onClick={todoAddHandler}>
+        Add
+      </button>
+      <ul>
+        {todoList.map(todo => (
+          <li key={todo.id} onClick={() => todoRemoveHandler(todo.id)}>
+            {todo.name}
+          </li>
+        ))}
+      </ul>
+    </React.Fragment>
+  );
+};
+...
+```
