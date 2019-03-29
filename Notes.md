@@ -2171,5 +2171,15 @@ Steps
 
 ___
 
-## **Redux Saga**
+## **React Hooks**
 
+| Functional | Functional with Hooks | Class-based |
+|---|---|---|
+| Props in, JSX out | Functional components |  Use props and state |
+| Great for presentation | Hooks replace class-only functionalities | Business logic goes here |
+| Focused on one/fex purpose(s) |   | Orchestrates components |
+
+Conversion is annoying
+Lifecycle hooks can be hard to use
+
+___
