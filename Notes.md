@@ -2513,7 +2513,7 @@ const todo = props => {
   };
 ...
 ```
-
+___
 ## **useReducer() and useState()**
 With the reducer - we always get the latest state (guaranteed by React internals)
 Therefore, we don't need to use 'useEffect()' to manage submitted state
@@ -2616,3 +2616,76 @@ const todo = props => {
 };
 ...
 ```
+___
+
+## **useRef() hook**
+
+``` jsx
+import React, { useEffect, useReducer, useRef } from "react";
+import axios from "axios";
+
+const todo = props => {
+  const todoInputRef = useRef();
+  ...
+  const todoAddHandler = () => {
+    const todoName = todoInputRef.current.value;
+    axios
+      .post("https://react-hooks-39657.firebaseio.com/todos.json", {
+        name: todoName
+      })
+      .then(res => {
+        setTimeout(() => {
+          const todoItem = {
+            id: res.data.name,
+            name: todoName
+          };
+          dispatch({type: 'ADD', payload: todoItem});
+        }, 5000);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  ...
+
+  return (
+    <React.Fragment>
+      <input
+        type="text"
+        placeholder="Todo"
+        ref={todoInputRef}
+      />
+      ...
+    </React.Fragment>
+  );
+};
+...
+```
+
+___
+
+## **Optimization - useMemo() hook**
+useMemo(arg1, arg2) - compare what is in mem and render only if necessary.
+args1 - could be anything (number or something) but mainly used with jsx
+args2 - array of things that react will watch to re-render on change
+
+``` jsx
+import React, { useState, useEffect, useReducer, useRef, useMemo } from "react";
+...
+const todo = props => {
+  ...
+  return (
+    <React.Fragment>
+      ...
+      {useMemo(
+        () => (
+          <List items={todoList} click={todoRemoveHandler} />
+        ),[todoList]
+      )}
+    </React.Fragment>
+  );
+};
+...
+```
+
