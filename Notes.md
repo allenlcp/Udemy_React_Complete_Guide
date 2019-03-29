@@ -2689,3 +2689,57 @@ const todo = props => {
 ...
 ```
 
+___
+
+## **Creating custom hooks**
+* custom hooks should start with 'use' word just to keep in line with other hooks
+
+``` jsx
+import { useState } from 'react';
+
+export const userFormInput = () => {
+    const [value, setValue] = useState('');
+    const [validity, setValidity] = useState(false);
+
+    const inputChangeHandler = event => {
+        setValue(event.target.value);
+
+        if(event.target.value.trim() === ''){
+            setValidity(false);
+        } else {
+            setValidity(true);
+        }
+    }
+
+    return {
+        value: value,
+        onChange: inputChangeHandler,
+        validity: validity
+    }
+}
+```
+
+Using custom hooks
+``` jsx
+...
+import { userFormInput } from '../hooks/forms';
+
+const todo = props => {
+  ...
+  const todoInput = userFormInput();
+  ...
+  return (
+    <React.Fragment>
+      <input
+        type="text"
+        placeholder="Todo"
+        onChange={todoInput.onChange}
+        value={todoInput.value}
+        style={{ backgroundColor: todoInput.validity ? "transparent" : "red" }}
+      />
+      ...
+    </React.Fragment>
+  );
+};
+...
+```
